@@ -139,6 +139,10 @@ JAZZMIN_SETTINGS = {
     "site_title": "Morning Glory Florist",
     "site_header": "Morning Glory Florist",
     "site_brand": "Morning Glory Florist",
+    # Jazzmin mencari logo relatif terhadap folder STATIC_ROOT setelah collectstatic.
+    # Pastikan file logo.png ada di: static/img/logo.png (di root project)
+    # lalu jalankan: python manage.py collectstatic
+    # Hasilnya akan ada di: staticfiles/img/logo.png — itulah yang dibaca Jazzmin.
     "site_logo": "img/logo.png",
     "login_logo": "img/logo.png",
     "login_form_url": "",

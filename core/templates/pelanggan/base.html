@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -244,7 +245,7 @@
       <!-- LOGO -->
       <div class="site-logo">
         <a href="{% url 'pelanggan_index' %}">
-          <i class="fa-solid fa-seedling me-2"></i>
+          <img src="{% static 'img/logo.png' %}" alt="Morning Glory Florist" style="height:36px; width:auto; vertical-align:middle; margin-right:8px;">
           Morning Glory Florist
         </a>
       </div>
