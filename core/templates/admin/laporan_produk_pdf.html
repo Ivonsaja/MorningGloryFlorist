@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+{% load humanize %}
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Produk</title>
+    <style>
+        @page {
+            margin: 22mm 16mm 22mm 16mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 11px;
+        }
+        .kop {
+            width: 100%;
+            margin-bottom: 6px;
+            border: none;
+        }
+        .kop td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+        .kop-logo {
+            width: 70px;
+            padding-right: 10px;
+            vertical-align: middle;
+        }
+        .kop-logo img {
+            width: 55px;
+            height: auto;
+        }
+        .kop-text {
+            text-align: center;
+            line-height: 1.2;
+            padding-top: 2px;
+            vertical-align: middle;
+        }
+        .kop-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .kop-sub {
+            font-size: 11px;
+        }
+        .kop-sep {
+            border-top: 2px solid #000;
+            margin: 8px 0 10px 0;
+        }
+        .report-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+        }
+        .filter-info {
+            margin: 6px 0 8px 0;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+        .tbl-data {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0 0 10px 0;
+            font-size: 10.5px;
+        }
+        .tbl-data th,
+        .tbl-data td {
+            border: 1px solid #000;
+            padding: 4px 3px;
+            vertical-align: top;
+            line-height: 1.15;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        .tbl-data th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: center;
+        }
+        .tbl-data th.no-col,
+        .tbl-data td.no-col {
+            width: 3%;
+            min-width: 3%;
+            max-width: 3%;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .tbl-data th.nama-col,
+        .tbl-data td.nama-col { width: 45%; }
+        .tbl-data th.harga-col,
+        .tbl-data td.harga-col { width: 17%; }
+        .tbl-data th.stok-col,
+        .tbl-data td.stok-col { width: 15%; }
+        .tbl-data th.terjual-col,
+        .tbl-data td.terjual-col { width: 20%; }
+        
+        .tbl-data td.nama-col {
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .summary-section {
+            margin-top: 10px;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+        .print-date {
+            margin-top: 8px;
+            font-size: 11px;
+        }
+        .signature-section {
+            margin-top: 35px;
+            text-align: right;
+            font-size: 11px;
+        }
+        .signature-space {
+            margin-top: 55px;
+        }
+    </style>
+</head>
+<body>
+    <table class="kop" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="kop-logo">
+                <img src="C:\projectdjango\MorningGloryFlorist\static\img\logo.png" alt="Logo">
+            </td>
+            <td class="kop-text">
+                <div class="kop-title">Morning Glory Florist</div>
+                <div class="kop-sub">Jl. Terusan Timor Raya No.69, Pasir Panjang, Lama City, Kupang City, East Nusa Tenggara 85227</div>
+                <div class="kop-sub">Jam Operasional : Senin-sabtu (08:00-19:00)</div>
+                <div class="kop-sub">No.Hp : 0821-4493-8887</div>
+            </td>
+           
+        </tr>
+        <tr> <td colspan="2"><hr><br></td></tr>
+    </table>
+
+    <div class="kop-sep"></div>
+    <div class="report-title">LAPORAN PRODUK</div>
+    
+    <div class="filter-info">
+        <strong>Filter:</strong><br>
+        {% if filters.start_date %}Tanggal Awal: {{ filters.start_date }}{% endif %}
+        {% if filters.end_date %}{% if filters.start_date %} | {% endif %}Tanggal Akhir: {{ filters.end_date }}{% endif %}
+        {% if filters.status %}{% if filters.start_date or filters.end_date %} | {% endif %}Status: {{ filters.status }}{% endif %}
+        {% if not filters.start_date and not filters.end_date and not filters.status %}Semua Data{% endif %}
+    </div>
+    
+    <table class="tbl-data">
+        <thead>
+            <tr>
+                <th class="no-col">No</th>
+                <th class="nama-col">Nama Produk</th>
+                <th class="harga-col">Harga</th>
+                <th class="stok-col">Stok</th>
+                <th class="terjual-col">Kuantitas Terjual</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if produk_data %}
+                {% for produk in produk_data %}
+                <tr>
+                    <td class="no-col">{{ produk.no }}</td>
+                    <td class="nama-col">{{ produk.nama }}</td>
+                    <td class="harga-col">Rp. {{ produk.harga|floatformat:2|intcomma }}</td>
+                    <td class="stok-col">{{ produk.stok }}</td>
+                    <td class="terjual-col">{{ produk.terjual }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Tidak ada data</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    
+    <div class="print-date">
+        <strong>Tanggal Cetak:</strong> {{ today }}
+    </div>
+    
+    <div class="signature-section">
+        <div>Pemilik</div>
+        <div class="signature-space">&nbsp;</div>
+        <div>(Inggie Lena)</div>
+    </div>
+</body>
+</html>

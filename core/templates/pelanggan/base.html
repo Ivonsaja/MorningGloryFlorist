@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Morning Glory Florist{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF5F00;
+            --accent-color: #FFC300;
+        }
+        
+        /* NAVBAR STYLES */
+        .site-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: 18px 0;
+        }
+
+        .navbar-wrap {
+            background: #FF5F00;
+            border-radius: 18px;
+            padding: 12px 22px;
+            box-shadow: 0 12px 30px rgba(0,0,0,.15);
+        }
+
+        .site-logo a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .site-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .site-menu li {
+            position: relative;
+        }
+
+        .site-menu a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all .2s ease;
+        }
+
+        .site-menu a:hover {
+            background: rgba(255,255,255,.18);
+        }
+
+        .site-menu .dropdown {
+            position: absolute;
+            top: 120%;
+            left: 0;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,.12);
+            list-style: none;
+            padding: 10px 0;
+            min-width: 170px;
+            display: none;
+        }
+
+        .site-menu .dropdown li a {
+            color: #333;
+            display: block;
+            padding: 8px 16px;
+        }
+
+        .site-menu .has-children:hover .dropdown {
+            display: block;
+        }
+
+        /* MOBILE MENU */
+        body {
+            overflow-x: hidden;
+        }
+        
+        .site-mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 86vw;
+            max-width: 320px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #FF5F00;
+            transition: right .25s ease;
+            z-index: 2000;
+            padding-top: 20px;
+        }
+
+        .site-mobile-menu.active {
+            right: 0;
+        }
+        
+        .site-mobile-menu .site-menu {
+            display: block !important;
+            padding: 12px 0 24px 0;
+            margin: 0;
+        }
+        
+        .site-mobile-menu .site-menu li {
+            display: block !important;
+            width: 100%;
+            margin: 0;
+        }
+        
+        .site-mobile-menu .site-menu a {
+            display: block;
+            width: 100%;
+            padding: 12px 12px;
+            border-radius: 12px;
+        }
+        
+        .site-mobile-menu .dropdown {
+            position: static !important;
+            display: none;
+            background: transparent;
+            box-shadow: none;
+            padding-left: 10px;
+            margin-top: 6px;
+        }
+        
+        .site-mobile-menu .has-children.open > .dropdown {
+            display: block;
+        }
+        
+        .site-mobile-menu .dropdown a {
+            color: rgba(255,255,255,.92);
+            padding: 10px 12px;
+        }
+
+        .mobile-body ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .mobile-body li {
+            margin-bottom: 12px;
+        }
+
+        .mobile-body a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #e05500;
+            border-color: #e05500;
+        }
+        .text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Consistent card header colors */
+        .bg-primary-custom {
+            background-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        .card-header.bg-primary-custom {
+            border-bottom: 0 !important;
+        }
+        
+        /* Brand color aliases */
+        .bg-brand {
+            background-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        
+        /* Outline button consistent styling */
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        
+        /* Brand outline button */
+        .btn-brand-outline {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-brand-outline:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 18px 0;
+            margin-top: 40px;
+        }
+        footer .footer-sub {
+            color: rgba(255,255,255,.85);
+            font-size: 13px;
+        }
+        @media (max-width:576px){
+            .hero-section { min-height:60vh; }
+            body { font-size:14px; }
+            .navbar-brand { font-size:16px; }
+            h1,h2,h3 { font-size:18px; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<!-- MOBILE MENU -->
+<div class="site-mobile-menu" id="mobileMenu">
+  <div class="mobile-header d-flex justify-content-between align-items-center p-3">
+    <div class="fw-bold text-white">Morning Glory Florist</div>
+    <button class="btn btn-sm text-white" id="closeMenu">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="mobile-body px-3" id="mobileNavContent"></div>
+</div>
+
+<header class="site-navbar">
+  <div class="container">
+    <div class="navbar-wrap d-flex align-items-center justify-content-between">
+
+      <!-- LOGO -->
+      <div class="site-logo">
+        <a href="{% url 'pelanggan_index' %}">
+          <i class="fa-solid fa-seedling me-2"></i>
+          Morning Glory Florist
+        </a>
+      </div>
+
+      <!-- DESKTOP MENU -->
+      <nav class="site-navigation d-none d-lg-block">
+        <ul class="site-menu js-clone-nav">
+
+          <li><a href="{% url 'pelanggan_index' %}">Beranda</a></li>
+          <li><a href="{% url 'pelanggan_katalog' %}">Katalog</a></li>
+          <li><a href="{% url 'pelanggan_cara_pesan' %}">Cara Pesan</a></li>
+          <li><a href="{% url 'pelanggan_kontak' %}">Kontak</a></li>
+
+          {% if request.session.pelanggan_id %}
+          <li>
+            <a href="{% url 'pelanggan_cart' %}">
+              <i class="fa-solid fa-cart-shopping me-1"></i> Keranjang
+            </a>
+          </li>
+
+          <li class="has-children">
+            <a href="#">Akun</a>
+            <ul class="dropdown">
+              <li><a href="{% url 'pelanggan_akun' %}">Profil</a></li>
+              <li><a href="{% url 'pelanggan_pesanan_list' %}">Pesanan</a></li>
+              <li><a href="{% url 'pelanggan_logout' %}">Logout</a></li>
+            </ul>
+          </li>
+          {% else %}
+          <li><a href="{% url 'pelanggan_login' %}">Login</a></li>
+          <li><a href="{% url 'pelanggan_register' %}">Register</a></li>
+          {% endif %}
+
+        </ul>
+      </nav>
+
+      <!-- MOBILE TOGGLE -->
+      <div class="d-lg-none">
+        <button class="btn text-white" id="openMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const openBtn = document.getElementById("openMenu");
+  const closeBtn = document.getElementById("closeMenu");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const cloneNav = document.querySelector(".js-clone-nav");
+  const mobileBody = document.getElementById("mobileNavContent");
+
+  if (cloneNav && mobileBody) {
+    mobileBody.innerHTML = cloneNav.outerHTML;
+
+    // remove desktop-only classes if exist:
+    mobileBody.querySelectorAll(".d-none, .d-lg-block, .d-lg-none").forEach(el=>{
+      el.classList.remove("d-none","d-lg-block","d-lg-none");
+    });
+
+    // toggle dropdown on mobile
+    mobileBody.querySelectorAll(".has-children > a").forEach(a=>{
+      a.addEventListener("click", function(e){
+        e.preventDefault();
+        const li = this.closest(".has-children");
+        if (!li) return;
+        li.classList.toggle("open");
+      });
+    });
+  }
+
+  if (openBtn) openBtn.addEventListener("click", ()=> mobileMenu.classList.add("active"));
+  if (closeBtn) closeBtn.addEventListener("click", ()=> mobileMenu.classList.remove("active"));
+
+});
+</script>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <div class="fw-semibold">&copy; 2026 Morning Glory Florist</div>
+            <div class="footer-sub">copyright coderNTT</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

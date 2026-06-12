@@ -1,0 +1,166 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}Beranda - Morning Glory Florist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        min-height: 100vh;
+        box-shadow: 0 18px 40px rgba(0,0,0,.16);
+        background: url("{% static 'img/hero-img.jpg' %}") center/cover no-repeat;
+    }
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,.48);
+    }
+
+    .hero-inner {
+        position: relative;
+        z-index: 1;
+        padding: 56px 18px;
+    }
+
+    .fade-up {
+        animation: fadeUp .55s ease-out both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-gap {
+        margin-top: 36px;
+    }
+
+    .about-card {
+        border: 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid rgba(255,95,0,.18);
+        box-shadow: 0 18px 45px rgba(255,95,0,.18);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .about-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 55px rgba(255,95,0,.22);
+    }
+
+    .feature-card {
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 12px 26px rgba(0,0,0,.10);
+        transition: transform .18s ease, box-shadow .18s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 34px rgba(0,0,0,.14);
+    }
+
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 95, 0, .12);
+        color: var(--primary-color);
+        font-size: 20px;
+    }
+
+    @media (max-width: 576px) {
+        .hero-section { min-height: 100vh; border-radius: 18px; }
+        .hero-inner { padding: 44px 14px; }
+        .hero-inner h1 { font-size: 24px; }
+        .hero-inner p { font-size: 14px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section d-flex align-items-center">
+    <div class="container hero-inner text-center fade-up text-white">
+        <h1 class="fw-bold display-5 mb-2">Morning Glory Florist</h1>
+        <p class="lead mb-3">Rangkaian bunga terbaik untuk setiap momen spesial Anda</p>
+        <a href="{% url 'pelanggan_katalog' %}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-basket-shopping"></i> Lihat Katalog
+        </a>
+    </div>
+</section>
+
+<section class="section-gap">
+    <div class="card about-card fade-up">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-12 col-md-5 text-center">
+                    <img src="{% static 'img/logo-big.png' %}" class="img-fluid" style="max-width:260px;">
+                </div>
+                <div class="col-12 col-md-7">
+                    <h3 class="fw-bold mb-3">Tentang Kami</h3>
+                    <p class="mb-2">
+                        Morning Glory Florist merupakan usaha yang menyediakan berbagai jenis buket dan krans bunga
+                        untuk berbagai kebutuhan seperti hadiah, ulang tahun, wisuda, pernikahan, hingga acara duka cita.
+                    </p>
+                    <p class="mb-0">
+                        Kami mengutamakan kualitas bunga segar, desain elegan, dan pelayanan yang ramah
+                        agar setiap momen pelanggan terasa lebih berkesan.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-gap">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="fw-bold mb-0">Keunggulan Kami</h3>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card feature-card p-3">
+                <div class="feature-icon mb-3"><i class="fa-solid fa-leaf"></i></div>
+                <div class="fw-bold mb-1">Bunga Segar</div>
+                <div class="text-muted" style="font-size: 13px;">Pilihan bunga segar setiap hari untuk hasil rangkaian terbaik.</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card feature-card p-3">
+                <div class="feature-icon mb-3"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="fw-bold mb-1">Desain Elegan</div>
+                <div class="text-muted" style="font-size: 13px;">Rangkaian dirancang rapi, estetik, dan sesuai kebutuhan acara.</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card feature-card p-3">
+                <div class="feature-icon mb-3"><i class="fa-solid fa-truck-fast"></i></div>
+                <div class="fw-bold mb-1">Pengiriman Cepat</div>
+                <div class="text-muted" style="font-size: 13px;">Pesanan diproses cepat dan aman sampai tujuan.</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card feature-card p-3">
+                <div class="feature-icon mb-3"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                <div class="fw-bold mb-1">Layanan Ramah</div>
+                <div class="text-muted" style="font-size: 13px;">Konsultasi kebutuhan rangkaian dengan respons yang nyaman.</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

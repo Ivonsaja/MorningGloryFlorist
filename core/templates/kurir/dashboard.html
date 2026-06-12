@@ -1,0 +1,153 @@
+{% extends 'kurir/base.html' %}
+
+{% block title %}Dashboard Kurir{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-list-task"></i> Daftar Pengiriman
+        </h2>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Transaksi Perlu Diverifikasi</h5>
+            </div>
+            <div class="card-body">
+                {% if transaksi_data %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Pelanggan</th>
+                                <th>Produk</th>
+                                <th>Total (Rp)</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaksi in transaksi_data %}
+                            <tr>
+                                <td>{{ transaksi.no }}</td>
+                                <td>{{ transaksi.tanggal }}</td>
+                                <td>{{ transaksi.pelanggan }}</td>
+                                <td>{{ transaksi.produk }}</td>
+                                <td>Rp {{ transaksi.total_akhir|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge badge-dikirim">DIKIRIM</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#verifikasiModal"
+                                            data-transaksi-id="{{ transaksi.id }}">
+                                        <i class="bi bi-check-circle"></i> Verifikasi
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="mt-3">Tidak ada transaksi yang perlu diverifikasi</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verifikasi Modal -->
+<div class="modal fade" id="verifikasiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="verifikasiForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Verifikasi Pengiriman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Pilih Status</label>
+                        <select class="form-select" id="statusSelect" name="status" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="SELESAI">SELESAI</option>
+                            <option value="DIBATALKAN">DIBATALKAN</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="buktiField" style="display: none;">
+                        <label class="form-label">Upload Bukti Sampai *</label>
+                        <input type="file" class="form-control" name="buktiSampai" accept="image/*">
+                        <div class="form-text">Wajib diupload untuk status SELESAI</div>
+                    </div>
+                    
+                    <div class="mb-3" id="catatanField" style="display: none;">
+                        <label class="form-label">Catatan *</label>
+                        <textarea class="form-control" name="catatan" rows="3" placeholder="Masukkan alasan pembatalan..."></textarea>
+                        <div class="form-text">Wajib diisi untuk status DIBATALKAN</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle verifikasi modal
+    var verifikasiModal = document.getElementById('verifikasiModal');
+    verifikasiModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var transaksiId = button.getAttribute('data-transaksi-id');
+        
+        // Set form action
+        var form = document.getElementById('verifikasiForm');
+        form.action = '{% url "kurir_update_transaksi" 0 %}'.replace('0', transaksiId);
+        
+        // Reset form
+        document.getElementById('statusSelect').value = '';
+        document.getElementById('buktiField').style.display = 'none';
+        document.getElementById('catatanField').style.display = 'none';
+        form.reset();
+    });
+    
+    // Handle status change
+    document.getElementById('statusSelect').addEventListener('change', function() {
+        var status = this.value;
+        var buktiField = document.getElementById('buktiField');
+        var catatanField = document.getElementById('catatanField');
+        
+        if (status === 'SELESAI') {
+            buktiField.style.display = 'block';
+            catatanField.style.display = 'none';
+            buktiField.querySelector('input').required = true;
+            catatanField.querySelector('textarea').required = false;
+        } else if (status === 'DIBATALKAN') {
+            buktiField.style.display = 'none';
+            catatanField.style.display = 'block';
+            buktiField.querySelector('input').required = false;
+            catatanField.querySelector('textarea').required = true;
+        } else {
+            buktiField.style.display = 'none';
+            catatanField.style.display = 'none';
+            buktiField.querySelector('input').required = false;
+            catatanField.querySelector('textarea').required = false;
+        }
+    });
+});
+</script>
+{% endblock %}

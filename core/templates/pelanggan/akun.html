@@ -1,0 +1,72 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Akun Saya - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fa-solid fa-user"></i> Akun Saya</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Profil Saya</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" value="{{ pelanggan.username }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="namaPelanggan" class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="namaPelanggan" name="namaPelanggan" value="{{ pelanggan.namaPelanggan }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Alamat</label>
+                        <textarea class="form-control" id="alamat" name="alamat" rows="3">{{ pelanggan.alamat|default:'' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nomorTelepon" class="form-label">Nomor Telepon</label>
+                        <input type="text" class="form-control" id="nomorTelepon" name="nomorTelepon" value="{{ pelanggan.nomorTelepon|default:'' }}">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-check-circle"></i> Update Profil
+                        </button>
+                        <a href="{% url 'pelanggan_password' %}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-key"></i> Ganti Password
+                        </a>
+                        <a href="{% url 'pelanggan_logout' %}" class="btn btn-outline-danger">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Informasi Akun</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Username:</strong> {{ pelanggan.username }}</p>
+                <p><strong>Nama:</strong> {{ pelanggan.namaPelanggan }}</p>
+                {% if pelanggan.alamat %}
+                <p><strong>Alamat:</strong> {{ pelanggan.alamat }}</p>
+                {% endif %}
+                {% if pelanggan.nomorTelepon %}
+                <p><strong>Telepon:</strong> {{ pelanggan.nomorTelepon }}</p>
+                {% endif %}
+                <hr>
+                <a href="{% url 'pelanggan_pesanan_list' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-bag-shopping"></i> Lihat Pesanan Saya
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

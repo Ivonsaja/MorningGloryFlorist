@@ -1,0 +1,60 @@
+{% extends "admin/base_site.html" %}
+
+{% load humanize %}
+
+{% block title %}Laporan Data Pelanggan{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Laporan Data Pelanggan</h3>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12" style="text-align: right;">
+                            <a href="{% url 'laporan_pelanggan_pdf' %}" class="btn btn-success" target="_blank">Cetak PDF</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Pelanggan</th>
+                                    <th>Transaksi Selesai</th>
+                                    <th>Total Pengeluaran (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pelanggan_data %}
+                                    {% for pelanggan in pelanggan_data %}
+                                    <tr>
+                                        <td>{{ pelanggan.no }}</td>
+                                        <td>{{ pelanggan.nama }}</td>
+                                        <td>{{ pelanggan.jml_transaksi }}</td>
+                                        <td>Rp. {{ pelanggan.total_pengeluaran|floatformat:2|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">Tidak ada data</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

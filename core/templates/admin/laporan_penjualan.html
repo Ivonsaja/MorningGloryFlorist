@@ -1,0 +1,113 @@
+{% extends "admin/base_site.html" %}
+
+{% load humanize %}
+
+{% block title %}Laporan Penjualan{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Laporan Penjualan</h3>
+                </div>
+                
+                <!-- Filter Form -->
+                <div class="card-body">
+                    <form method="GET" class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="start_date">Tanggal Awal</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filters.start_date }}">
+                        </div>
+                        
+                        <div class="form-group col-md-3">
+                            <label for="end_date">Tanggal Akhir</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filters.end_date }}">
+                        </div>
+                        
+                        <div class="form-group col-md-3">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="">Semua Status</option>
+                                {% for status_value, status_label in status_choices %}
+                                    <option value="{{ status_value }}" {% if filters.status == status_value %}selected{% endif %}>
+                                        {{ status_label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group col-md-3" style="align-self: flex-end;">
+                            <button type="submit" class="btn btn-primary mr-2">Terapkan Filter</button>
+                            <a href="{% url 'laporan_penjualan_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-success" target="_blank">Cetak PDF</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="info-box bg-info">
+                                <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Jumlah Transaksi</span>
+                                    <span class="info-box-number">{{ summary.total_transaksi }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box bg-success">
+                                <span class="info-box-icon"><i class="fas fa-dollar-sign"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Pendapatan</span>
+                                    <span class="info-box-number">Rp. {{ summary.total_pendapatan|floatformat:2|intcomma }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Pelanggan</th>
+                                    <th>Produk</th>
+                                    <th>Ongkir</th>
+                                    <th>Total (Produk + Ongkir)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if transaksi_data %}
+                                    {% for transaksi in transaksi_data %}
+                                    <tr>
+                                        <td>{{ transaksi.no }}</td>
+                                        <td>{{ transaksi.tanggal }}</td>
+                                        <td>{{ transaksi.pelanggan }}</td>
+                                        <td>{{ transaksi.produk }}</td>
+                                        <td>Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
+                                        <td>Rp. {{ transaksi.total_akhir|floatformat:2|intcomma }}</td>
+                                        <td>{{ transaksi.status }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">Tidak ada data</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

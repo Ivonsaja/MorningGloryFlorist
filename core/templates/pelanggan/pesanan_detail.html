@@ -1,0 +1,92 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Detail Pesanan - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-brand text-white">
+        <h5 class="mb-0">Detail Transaksi #{{ transaksi.idTransaksi }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Tanggal:</strong> {{ transaksi.tanggalTransaksi|date:"d M Y H:i" }}</p>
+                <p><strong>Status:</strong> 
+                    {% if transaksi.status == 'DIKIRIM' %}
+                    <span class="badge bg-primary">{{ transaksi.status }}</span>
+                    {% elif transaksi.status == 'SELESAI' %}
+                    <span class="badge bg-success">{{ transaksi.status }}</span>
+                    {% elif transaksi.status == 'MENUNGGU_VERIFIKASI' %}
+                    <span class="badge bg-warning">{{ transaksi.status }}</span>
+                    {% elif transaksi.status == 'DIBATALKAN' %}
+                    <span class="badge bg-danger">{{ transaksi.status }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ transaksi.status }}</span>
+                    {% endif %}
+                </p>
+                <p><strong>Alamat Pengiriman:</strong><br>{{ transaksi.alamatPengiriman }}</p>
+                {% if transaksi.catatan %}
+                <p><strong>Catatan:</strong><br>{{ transaksi.catatan }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <p><strong>Total Produk:</strong> Rp {{ transaksi.totalTransaksi|floatformat:0|intcomma }}</p>
+                <p><strong>Ongkir:</strong> Rp {{ transaksi.ongkir|floatformat:0|intcomma }}</p>
+                <p><strong>Total Akhir:</strong> Rp {{ total_akhir|floatformat:0|intcomma }}</p>
+                
+                {% if transaksi.buktiBayar %}
+                <p><strong>Bukti Pembayaran:</strong></p>
+                <img src="{{ transaksi.buktiBayar.url }}" alt="Bukti Bayar" class="img-thumbnail" style="max-width: 300px;">
+                {% endif %}
+                
+                {% if transaksi.buktiSampai %}
+                <p><strong>Bukti Sampai:</strong></p>
+                <img src="{{ transaksi.buktiSampai.url }}" alt="Bukti Sampai" class="img-thumbnail" style="max-width: 300px;">
+                {% endif %}
+                
+                {% if transaksi.status == 'REFUND_SELESAI' and transaksi.buktiRefund %}
+                <p><strong>Bukti Refund:</strong></p>
+                <img src="{{ transaksi.buktiRefund.url }}" alt="Bukti Refund" class="img-thumbnail" style="max-width: 300px;">
+                <p><strong>Tanggal Refund:</strong> {{ transaksi.tanggalRefund|date:"d M Y" }}</p>
+                {% if transaksi.catatanRefund %}
+                <p><strong>Catatan Refund:</strong> {{ transaksi.catatanRefund }}</p>
+                {% endif %}
+                {% endif %}
+                
+                {% if transaksi.catatanPembayaran %}
+                <p><strong>Catatan Admin:</strong> {{ transaksi.catatanPembayaran }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5 class="mb-3">Item yang Dipesan</h5>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="bg-brand text-white">
+            <tr>
+                <th>Produk</th>
+                <th>Harga Satuan</th>
+                <th>Jumlah</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in details %}
+            <tr>
+                <td>{{ detail.idProduk.namaProduk }}</td>
+                <td>Rp {{ detail.hargaSatuanSaatTransaksi|floatformat:0|intcomma }}</td>
+                <td>{{ detail.jumlahProduk }}</td>
+                <td>Rp {{ detail.subTotal|floatformat:0|intcomma }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'pelanggan_pesanan_list' %}" class="btn btn-brand-outline mt-3">
+    <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Pesanan
+</a>
+{% endblock %}

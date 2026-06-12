@@ -1,0 +1,64 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Daftar Pesanan - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fa-solid fa-bag-shopping"></i> Daftar Pesanan</h2>
+
+{% if pesanan_data %}
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>No. Transaksi</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+                <th>Total Produk</th>
+                <th>Ongkir</th>
+                <th>Total Akhir</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in pesanan_data %}
+            <tr>
+                <td>{{ data.transaksi.idTransaksi }}</td>
+                <td>{{ data.transaksi.tanggalTransaksi|date:"d M Y" }}</td>
+                <td>
+                    {% if data.transaksi.status == 'DIKIRIM' %}
+                    <span class="badge bg-primary">{{ data.transaksi.status }}</span>
+                    {% elif data.transaksi.status == 'SELESAI' %}
+                    <span class="badge bg-success">{{ data.transaksi.status }}</span>
+                    {% elif data.transaksi.status == 'MENUNGGU_VERIFIKASI' %}
+                    <span class="badge bg-warning">{{ data.transaksi.status }}</span>
+                    {% elif data.transaksi.status == 'DIBATALKAN' %}
+                    <span class="badge bg-danger">{{ data.transaksi.status }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ data.transaksi.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ data.total_produk }}</td>
+                <td>Rp {{ data.transaksi.ongkir|floatformat:0|intcomma }}</td>
+                <td>Rp {{ data.total_akhir|floatformat:0|intcomma }}</td>
+                <td>
+                    <a href="{% url 'pelanggan_pesanan_detail' data.transaksi.idTransaksi %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fa-solid fa-eye"></i> Detail
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fa-solid fa-bag-xmark" style="font-size: 4rem; color: #ccc;"></i>
+    <h4 class="mt-3">Belum Ada Pesanan</h4>
+    <p class="text-muted">Mulai belanja sekarang!</p>
+    <a href="{% url 'pelanggan_katalog' %}" class="btn btn-primary mt-3">
+        <i class="fa-solid fa-seedling"></i> Lihat Katalog
+    </a>
+</div>
+{% endif %}
+{% endblock %}

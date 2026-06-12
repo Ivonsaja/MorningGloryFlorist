@@ -1,0 +1,204 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Checkout - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<h2 class="mb-3"><i class="fa-solid fa-credit-card"></i> Checkout</h2>
+
+<div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+    <i class="fa-solid fa-circle-info fs-5 me-3"></i>
+    <div>
+        <strong>Pemberitahuan:</strong> Untuk saat ini, sistem kami hanya dapat memproses pembayaran melalui <strong>Transfer Bank</strong>.
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Detail Pesanan</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.product.namaProduk }}</td>
+                                <td>{{ item.qty }}</td>
+                                <td>Rp {{ item.subtotal|floatformat:0|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-end">Total Produk:</th>
+                                <th>Rp {{ total_transaksi|floatformat:0|intcomma }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Informasi Pengiriman</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="alamatPengiriman" class="form-label">Alamat Pengiriman *</label>
+                        <textarea class="form-control" id="alamatPengiriman" name="alamatPengiriman" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="catatan" class="form-label">Catatan (Opsional)</label>
+                        <textarea class="form-control" id="catatan" name="catatan" rows="2"></textarea>
+                    </div>
+                    
+                   <div class="mb-4">
+    <label class="form-label fw-bold">Pilih Bank & Transfer ke Nomor Rekening Berikut:</label>
+    
+    <ul class="nav nav-tabs mb-3" id="bankTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="bri-tab" data-bs-toggle="tab" data-bs-target="#bri" type="button" role="tab" aria-controls="bri" aria-selected="true">BRI</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bca-tab" data-bs-toggle="tab" data-bs-target="#bca" type="button" role="tab" aria-controls="bca" aria-selected="false">BCA</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="mandiri-tab" data-bs-toggle="tab" data-bs-target="#mandiri" type="button" role="tab" aria-controls="mandiri" aria-selected="false">MANDIRI</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ntt-tab" data-bs-toggle="tab" data-bs-target="#ntt" type="button" role="tab" aria-controls="ntt" aria-selected="false">BANK NTT</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="bankTabContent">
+        <div class="tab-pane fade show active" id="bri" role="tabpanel" aria-labelledby="bri-tab">
+            <div class="border rounded p-3 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-primary fs-4 me-2"></i>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block fw-bold text-uppercase">Bank BRI</small>
+                        <small class="text-muted d-block">Atas nama: Morning Glory Florist</small>
+                        <strong class="fs-5 text-dark">0023-01-000456-50-1</strong> </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary copy-btn" data-copy="002301000456501" title="Salin nomor rekening">
+                        <i class="fa-regular fa-copy"></i> Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="bca" role="tabpanel" aria-labelledby="bca-tab">
+            <div class="border rounded p-3 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-primary fs-4 me-2"></i>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block fw-bold text-uppercase">Bank BCA</small>
+                        <small class="text-muted d-block">Atas nama: Morning Glory Florist</small>
+                        <strong class="fs-5 text-dark">8420-123-456</strong> </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary copy-btn" data-copy="8420123456" title="Salin nomor rekening">
+                        <i class="fa-regular fa-copy"></i> Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="mandiri" role="tabpanel" aria-labelledby="mandiri-tab">
+            <div class="border rounded p-3 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-primary fs-4 me-2"></i>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block fw-bold text-uppercase">Bank Mandiri</small>
+                        <small class="text-muted d-block">Atas nama: Morning Glory Florist</small>
+                        <strong class="fs-5 text-dark">137-00-1234567-8</strong> </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary copy-btn" data-copy="1370012345678" title="Salin nomor rekening">
+                        <i class="fa-regular fa-copy"></i> Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="ntt" role="tabpanel" aria-labelledby="ntt-tab">
+            <div class="border rounded p-3 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-primary fs-4 me-2"></i>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block fw-bold text-uppercase">Bank NTT</small>
+                        <small class="text-muted d-block">Atas nama: Morning Glory Florist</small>
+                        <strong class="fs-5 text-dark">001-02.03-456789-0</strong> </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary copy-btn" data-copy="00102034567890" title="Salin nomor rekening">
+                        <i class="fa-regular fa-copy"></i> Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="copy-feedback alert alert-success mt-2" style="display: none;">
+        <i class="fa-solid fa-check-circle"></i> Nomor rekening berhasil disalin
+    </div>
+</div>
+                    <div class="mb-3">
+                        <label for="buktiBayar" class="form-label">Bukti Pembayaran *</label>
+                        <input type="file" class="form-control" id="buktiBayar" name="buktiBayar" accept="image/*" required>
+                        <div class="form-text">Upload foto bukti transfer pembayaran</div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-check-circle"></i> Buat Pesanan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'pelanggan_cart' %}" class="btn btn-outline-secondary mt-3">
+    <i class="fa-solid fa-arrow-left"></i> Kembali ke Keranjang
+</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
+    copyButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const rekeningNumber = this.getAttribute('data-copy');
+            const feedbackEl = document.querySelector('.copy-feedback');
+            
+            navigator.clipboard.writeText(rekeningNumber).then(function() {
+                if (feedbackEl) {
+                    feedbackEl.style.display = 'block';
+                    
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
+                    btn.disabled = true;
+                    
+                    setTimeout(function() {
+                        feedbackEl.style.display = 'none';
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }).catch(function(err) {
+                console.error('Gagal menyalin:', err);
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

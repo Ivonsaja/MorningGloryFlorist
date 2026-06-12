@@ -1,0 +1,44 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Kontak - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fa-solid fa-envelope"></i> Hubungi Kami</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Informasi Toko</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Nama Pemilik:</strong> Inggie Lena (Wanita)</p>
+                <p><strong>Alamat:</strong><br>
+                    dekat dealer Toyota, Jl. Terusan Timor Raya No.69,<br>
+                    Pasir Panjang, Lama City, Kupang City,<br>
+                    East Nusa Tenggara 85227
+                </p>
+                <p><strong>Jam Operasional:</strong><br>
+                    Senin–Sabtu (08:00–19:00)<br>
+                    Minggu (Tutup)
+                </p>
+                <p><strong>No. HP:</strong> 0821-4493-8887</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary-custom">
+                <h5 class="mb-0">Lokasi Kami</h5>
+            </div>
+            <div class="card-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3927.3494681774137!2d123.59877807416446!3d-10.152222209523488!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2c569cc40d1a95bf%3A0xae94fd4e74e200b7!2sJl.%20Terusan%20Timor%20Raya%20No.69%2C%20Pasir%20Panjang%2C%20Kec.%20Kota%20Lama%2C%20Kota%20Kupang%2C%20Nusa%20Tenggara%20Tim.%2085227!5e0!3m2!1sid!2sid!4v1772758227494!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

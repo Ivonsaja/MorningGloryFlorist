@@ -1,0 +1,343 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Cara Pesan - Morning Glory Florist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .step-wrapper {
+        position: relative;
+    }
+    
+    .step-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px 16px;
+        height: 100%;
+        border: 1px solid rgba(255,95,0,.15);
+        box-shadow: 0 8px 20px rgba(0,0,0,.05);
+        transition: .2s ease;
+        position: relative;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(0,0,0,.08);
+    }
+    
+    .step-icon {
+        font-size: 28px;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+    
+    .step-link-btn {
+        margin-top: 14px;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+    
+    .step-arrow {
+        display: none;
+    }
+    
+    .copy-btn {
+        border: none;
+        background: transparent;
+        color: var(--primary-color);
+        margin-left: auto;
+        font-size: 18px;
+        cursor: pointer;
+        transition: .2s;
+    }
+    
+    .copy-btn:hover {
+        color: #e05500;
+        transform: scale(1.1);
+    }
+    
+    .copy-feedback {
+        font-size: 13px;
+        color: green;
+        display: none;
+        margin-top: 6px;
+    }
+    
+    .payment-card {
+        border: 1px solid rgba(255,95,0,.15);
+        padding: 14px;
+        border-radius: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .payment-card i {
+        color: var(--primary-color);
+        font-size: 20px;
+    }
+    
+    /* Desktop flow - arrows between cards */
+    @media (min-width: 992px) {
+        .step-wrapper:not(:last-child)::after {
+            content: "\f061";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            right: -14px;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 18px;
+            z-index: 2;
+        }
+    }
+    
+    /* Mobile flow - arrows pointing down */
+    @media (max-width: 991.98px) {
+        .step-wrapper:not(:last-child)::after {
+            content: "\f063";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 50%;
+            bottom: -18px;
+            transform: translateX(-50%);
+            color: var(--primary-color);
+            font-size: 18px;
+            z-index: 2;
+        }
+        
+        .step-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        .step-card {
+            text-align: center;
+        }
+        
+        .step-icon {
+            font-size: 26px;
+        }
+        
+        .payment-card {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="fa-solid fa-circle-info text-primary-custom"></i> Cara Pemesanan
+</h2>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <div class="row g-4">
+            
+            <!-- Step 1: Pilih Produk -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-seedling step-icon"></i>
+                    <h6>1. Pilih Produk</h6>
+                    <p>Browse katalog dan pilih rangkaian bunga yang Anda inginkan.</p>
+                    <a href="{% url 'pelanggan_katalog' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-eye"></i> Lihat Katalog
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Step 2: Keranjang -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-cart-shopping step-icon"></i>
+                    <h6>2. Keranjang</h6>
+                    <p>Tambahkan produk ke keranjang belanja Anda.</p>
+                    {% if is_logged_in %}
+                    <a href="{% url 'pelanggan_cart' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-cart-shopping"></i> Lihat Keranjang
+                    </a>
+                    {% else %}
+                    <a href="{% url 'pelanggan_login' %}?next={% url 'pelanggan_cart' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login Dulu
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step 3: Checkout -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-receipt step-icon"></i>
+                    <h6>3. Checkout</h6>
+                    <p>Isi alamat pengiriman dan konfirmasi pesanan.</p>
+                    {% if not is_logged_in %}
+                    <a href="{% url 'pelanggan_login' %}?next={% url 'pelanggan_checkout' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login untuk Checkout
+                    </a>
+                    {% elif cart_count == 0 %}
+                    <a href="{% url 'pelanggan_katalog' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-seedling"></i> Pilih Produk Dulu
+                    </a>
+                    {% else %}
+                    <a href="{% url 'pelanggan_checkout' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-credit-card"></i> Checkout Sekarang
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step 4: Pembayaran -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-money-bill-wave step-icon"></i>
+                    <h6>4. Pembayaran</h6>
+                    <p>Lakukan transfer sesuai metode pembayaran.</p>
+                    <button type="button" class="btn btn-brand-outline btn-sm step-link-btn" id="scrollPembayaranBtn">
+                        <i class="fa-solid fa-credit-card"></i> Lihat Rekening
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Pengiriman -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-truck step-icon"></i>
+                    <h6>5. Pengiriman</h6>
+                    <p>Pesanan diverifikasi dan dikirim oleh kurir.</p>
+                    {% if is_logged_in %}
+                    <a href="{% url 'pelanggan_pesanan_list' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-bag-shopping"></i> Lihat Pesanan
+                    </a>
+                    {% else %}
+                    <a href="{% url 'pelanggan_login' %}?next={% url 'pelanggan_pesanan_list' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login Dulu
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step 6: Pesanan Diterima -->
+            <div class="col-12 col-md-6 col-lg-2 step-wrapper">
+                <div class="step-card text-center">
+                    <i class="fa-solid fa-circle-check step-icon"></i>
+                    <h6>6. Pesanan Diterima</h6>
+                    <p>Status pesanan berubah menjadi selesai.</p>
+                    {% if is_logged_in %}
+                    <a href="{% url 'pelanggan_pesanan_list' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-list-check"></i> Cek Status
+                    </a>
+                    {% else %}
+                    <a href="{% url 'pelanggan_login' %}?next={% url 'pelanggan_pesanan_list' %}" class="btn btn-brand-outline btn-sm step-link-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login Dulu
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm" id="metodePembayaran">
+    <div class="card-header bg-brand text-white">
+        <h5 class="mb-0">
+            <i class="fa-solid fa-credit-card"></i> Metode Pembayaran
+        </h5>
+    </div>
+    
+    <div class="card-body">
+        <p class="mb-3">Pembayaran dapat dilakukan melalui transfer bank berikut:</p>
+        
+        <div class="row g-3">
+            
+            <div class="col-md-6">
+                <div class="payment-card">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <div class="w-100">
+                        <strong>Bank BCA</strong>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="rekening-text" data-rekening="1234567890">1234567890</span>
+                            <button type="button" class="copy-btn" data-copy="1234567890" title="Salin nomor rekening">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="copy-feedback">Nomor rekening berhasil disalin</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="payment-card">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <div class="w-100">
+                        <strong>Bank Mandiri</strong>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="rekening-text" data-rekening="0987654321">0987654321</span>
+                            <button type="button" class="copy-btn" data-copy="0987654321" title="Salin nomor rekening">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="copy-feedback">Nomor rekening berhasil disalin</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Smooth scroll to payment method
+    const scrollBtn = document.getElementById('scrollPembayaranBtn');
+    const paymentSection = document.getElementById('metodePembayaran');
+    
+    if (scrollBtn && paymentSection) {
+        scrollBtn.addEventListener('click', function() {
+            paymentSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    }
+    
+    // Copy to clipboard functionality
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
+    copyButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const rekeningNumber = this.getAttribute('data-copy');
+            const feedbackEl = this.closest('.payment-card').querySelector('.copy-feedback');
+            const iconEl = this.querySelector('i');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(rekeningNumber).then(function() {
+                // Show feedback
+                if (feedbackEl) {
+                    feedbackEl.style.display = 'block';
+                    
+                    // Change icon temporarily
+                    const originalClass = iconEl.className;
+                    iconEl.className = 'fa-solid fa-check';
+                    
+                    // Hide after 2 seconds
+                    setTimeout(function() {
+                        feedbackEl.style.display = 'none';
+                        iconEl.className = originalClass;
+                    }, 2000);
+                }
+            }).catch(function(err) {
+                console.error('Gagal menyalin:', err);
+            });
+        });
+    });
+    
+});
+</script>
+{% endblock %}

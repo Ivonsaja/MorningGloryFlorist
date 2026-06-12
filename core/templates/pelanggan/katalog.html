@@ -1,0 +1,68 @@
+{% extends 'pelanggan/base.html' %}
+{% load humanize %}
+
+{% block title %}Katalog - Morning Glory Florist{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fa-solid fa-seedling"></i> Katalog Produk</h2>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if product.foto %}
+            <img src="{{ product.foto.url }}" class="card-img-top" alt="{{ product.namaProduk }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                <i class="fa-solid fa-seedling" style="font-size: 4rem; color: #ccc;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.namaProduk }}</h5>
+                <p class="card-text">Rp {{ product.hargaProduk|floatformat:0|intcomma }}</p>
+                <p class="card-text">
+                    {% if product.stok > 0 %}
+                        <small class="text-success">Stok: {{ product.stok }}</small>
+                    {% else %}
+                        <small class="badge bg-danger">Stok Habis</small>
+                    {% endif %}
+                </p>
+                
+                {% if request.session.pelanggan_id %}
+                    {% if product.stok > 0 %}
+                    <form method="post" action="{% url 'pelanggan_cart_add' product.idProduk %}" class="mt-2">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="number" name="qty" value="0" min="0" max="{{ product.stok }}" class="form-control form-control-sm" style="max-width:90px;">
+                            <button type="submit" class="btn btn-primary btn-sm" title="Tambah ke Keranjang">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </button>
+                            <a href="{% url 'pelanggan_produk_detail' product.idProduk %}" class="btn btn-outline-primary btn-sm" title="Detail">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="mt-2">
+                        <a href="{% url 'pelanggan_produk_detail' product.idProduk %}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fa-solid fa-eye"></i> Lihat Detail
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="mt-2">
+                    <a href="{% url 'pelanggan_login' %}?next={{ request.path }}" class="btn btn-primary btn-sm w-100">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login untuk beli
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center">Belum ada produk tersedia.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
