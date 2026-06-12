@@ -126,17 +126,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Folder sumber static files milik project (untuk collectstatic mengambil dari sini)
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# Hapus atau kosongkan list ini jika aset static Anda gabung di aplikasi core, 
+# atau biarkan kosong jika Anda tidak menggunakan custom global static di root.
+STATICFILES_DIRS = []
 
-# Folder tujuan collectstatic — PythonAnywhere akan serve dari folder ini
-# Path absolut: /home/coderNTT4/MorningGloryFlorist/staticfiles
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# SAMAKAN PATH INI DENGAN YANG ADA DI WEB TAB PYTHONANYWHERE
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Media files (upload pengguna: foto produk, bukti bayar, dll)
 MEDIA_URL = '/media/'
-
-# Path absolut: /home/coderNTT4/MorningGloryFlorist/media
 MEDIA_ROOT = BASE_DIR / 'media'
 
 JAZZMIN_SETTINGS = {
