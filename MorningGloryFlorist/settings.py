@@ -121,17 +121,15 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
 STATIC_URL = '/static/'
 
-# Hapus atau kosongkan list ini jika aset static Anda gabung di aplikasi core, 
-# atau biarkan kosong jika Anda tidak menggunakan custom global static di root.
-STATICFILES_DIRS = []
+# Beritahu Django untuk mengambil aset dari folder static di luar/root project
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
-# SAMAKAN PATH INI DENGAN YANG ADA DI WEB TAB PYTHONANYWHERE
-STATIC_ROOT = BASE_DIR / 'static'
+# Tempat berkumpulnya semua asset untuk production
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (upload pengguna: foto produk, bukti bayar, dll)
 MEDIA_URL = '/media/'
