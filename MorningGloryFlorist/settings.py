@@ -123,12 +123,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Beritahu Django untuk mengambil aset dari folder static di luar/root project
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# STATICFILES_DIRS dikosongkan karena semua aset sudah dipindahkan ke
+# core/static/img/ — Django akan otomatis menemukannya via APP_DIRS (AppDirectoriesFinder)
+# karena app 'core' terdaftar di INSTALLED_APPS.
+STATICFILES_DIRS = []
 
-# Tempat berkumpulnya semua asset untuk production
+# Folder tujuan collectstatic untuk production (PythonAnywhere)
+# Path absolut: /home/coderNTT4/MorningGloryFlorist/staticfiles
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (upload pengguna: foto produk, bukti bayar, dll)
