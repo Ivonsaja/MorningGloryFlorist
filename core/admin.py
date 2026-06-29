@@ -16,6 +16,8 @@ class DetailTransaksiInline(admin.StackedInline):
     verbose_name = "Detail Produk"
     verbose_name_plural = "Detail Produk"
 
+# tesss
+
 class KurirAdmin(admin.ModelAdmin):
     list_display = ('namaKurir', 'noHp', 'username', 'aksi_kurir')
     search_fields = ('namaKurir', 'username', 'noHp')
