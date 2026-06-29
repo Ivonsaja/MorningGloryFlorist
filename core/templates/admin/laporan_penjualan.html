@@ -16,12 +16,12 @@
                 <!-- Filter Form -->
                 <div class="card-body">
                     <form method="GET" class="form-row">
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2">
                             <label for="start_date">Tanggal Awal</label>
                             <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filters.start_date }}">
                         </div>
                         
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2">
                             <label for="end_date">Tanggal Akhir</label>
                             <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filters.end_date }}">
                         </div>
@@ -33,6 +33,18 @@
                                 {% for status_value, status_label in status_choices %}
                                     <option value="{{ status_value }}" {% if filters.status == status_value %}selected{% endif %}>
                                         {{ status_label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="kurir">Kurir</label>
+                            <select class="form-control" id="kurir" name="kurir">
+                                <option value="">Semua Kurir</option>
+                                {% for kurir in kurir_choices %}
+                                    <option value="{{ kurir.idKurir }}" {% if filters.kurir == kurir.idKurir|slugify %}selected{% endif %}>
+                                        {{ kurir.namaKurir }}
                                     </option>
                                 {% endfor %}
                             </select>
@@ -78,28 +90,42 @@
                                     <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Pelanggan</th>
+                                    <th>Kurir</th>
                                     <th>Produk</th>
+                                    <th>Satuan Produk</th>
+                                    <th>Harga Satuan</th>
+                                    <th>Total</th>
+                                    <th>Sub Total</th>
                                     <th>Ongkir</th>
-                                    <th>Total (Produk + Ongkir)</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% if transaksi_data %}
                                     {% for transaksi in transaksi_data %}
-                                    <tr>
-                                        <td>{{ transaksi.no }}</td>
-                                        <td>{{ transaksi.tanggal }}</td>
-                                        <td>{{ transaksi.pelanggan }}</td>
-                                        <td>{{ transaksi.produk }}</td>
-                                        <td>Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
-                                        <td>Rp. {{ transaksi.total_akhir|floatformat:2|intcomma }}</td>
-                                        <td>{{ transaksi.status }}</td>
-                                    </tr>
+                                        {% for item in transaksi.items %}
+                                        <tr>
+                                            {% if forloop.first %}
+                                                <td rowspan="{{ transaksi.items|length }}">{{ transaksi.no }}</td>
+                                                <td rowspan="{{ transaksi.items|length }}">{{ transaksi.tanggal }}</td>
+                                                <td rowspan="{{ transaksi.items|length }}">{{ transaksi.pelanggan }}</td>
+                                                <td rowspan="{{ transaksi.items|length }}">{{ transaksi.nama_kurir }}</td>
+                                            {% endif %}
+                                            
+                                            <td>{{ item.nama_produk }}</td>
+                                            <td>{{ item.jumlah }}</td>
+                                            <td>Rp. {{ item.harga_satuan|floatformat:2|intcomma }}</td>
+                                            <td>Rp. {{ item.subtotal_item|floatformat:2|intcomma }}</td>
+                                            
+                                            {% if forloop.first %}
+                                                <td rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.sub_total_transaksi|floatformat:2|intcomma }}</td>
+                                                <td rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
+                                            {% endif %}
+                                        </tr>
+                                        {% endfor %}
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="7" class="text-center">Tidak ada data</td>
+                                        <td colspan="10" class="text-center">Tidak ada data</td>
                                     </tr>
                                 {% endif %}
                             </tbody>

@@ -7,7 +7,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from datetime import datetime
-from .models import Transaksi, Produk, Pelanggan
+from .models import Transaksi, Produk, Pelanggan, Kurir
 from django.db.models import Sum, Q, Count, F, DecimalField, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from decimal import Decimal
@@ -21,15 +21,19 @@ from django.conf import settings as django_settings
 def build_laporan_penjualan_queryset(request):
     # Get filter parameters
     status = request.GET.get('status', '')
+    kurir_id = request.GET.get('kurir', '') # Ambil filter kurir
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     
     # Build queryset
-    queryset = Transaksi.objects.select_related('idPelanggan').prefetch_related('detail_set__idProduk').order_by('-tanggalTransaksi')
+    queryset = Transaksi.objects.select_related('idPelanggan', 'idKurir').prefetch_related('detail_set__idProduk').order_by('-tanggalTransaksi')
     
     # Apply filters
     if status:
         queryset = queryset.filter(status=status)
+    
+    if kurir_id:
+        queryset = queryset.filter(idKurir_id=kurir_id)
     
     if start_date:
         try:
@@ -50,6 +54,7 @@ def build_laporan_penjualan_queryset(request):
     # Prepare context
     context_filters = {
         'status': status,
+        'kurir': kurir_id,
         'start_date': start_date,
         'end_date': end_date,
     }
@@ -78,23 +83,24 @@ def admin_laporan_penjualan(request):
     # Prepare data for template
     transaksi_data = []
     for i, transaksi in enumerate(queryset, 1):
-        # Format products
-        produk_list = []
+        # Ambil list item detail untuk dikirim utuh ke template
+        items = []
         for detail in transaksi.detail_set.all():
-            produk_nama = detail.idProduk.namaProduk
-            produk_jumlah = detail.jumlahProduk
-            produk_list.append(f"{produk_nama} ({produk_jumlah})")
-        produk_str = ", ".join(produk_list)
-        
-        total_akhir = float(transaksi.totalTransaksi) + float(transaksi.ongkir)
-        
+            items.append({
+                'nama_produk': detail.idProduk.namaProduk,
+                'jumlah': detail.jumlahProduk,
+                'harga_satuan': detail.hargaSatuanSaatTransaksi or detail.idProduk.hargaProduk,
+                'subtotal_item': detail.subTotal,
+            })
+            
         transaksi_data.append({
             'no': i,
             'tanggal': transaksi.tanggalTransaksi.strftime('%d/%m/%Y'),
             'pelanggan': transaksi.idPelanggan.namaPelanggan,
-            'produk': produk_str,
+            'nama_kurir': transaksi.idKurir.namaKurir if transaksi.idKurir else "Belum Ditentukan",
+            'items': items,
+            'sub_total_transaksi': transaksi.totalTransaksi, # Total produk sebelum ongkir
             'ongkir': transaksi.ongkir,
-            'total_akhir': total_akhir,
             'status': transaksi.get_status_display(),
         })
     
@@ -103,6 +109,7 @@ def admin_laporan_penjualan(request):
         'filters': context_filters,
         'summary': summary,
         'status_choices': Transaksi.STATUS_CHOICES,
+        'kurir_choices': Kurir.objects.all(), # Kirim data kurir untuk dropdown
     }
     
     return render(request, 'admin/laporan_penjualan.html', context)
@@ -115,29 +122,39 @@ def admin_laporan_penjualan_pdf(request):
     # Prepare data for template
     transaksi_data = []
     for i, transaksi in enumerate(queryset, 1):
-        # Format products
-        produk_list = []
+        # Ambil list item detail untuk dikirim utuh ke template
+        items = []
         for detail in transaksi.detail_set.all():
-            produk_nama = detail.idProduk.namaProduk
-            produk_jumlah = detail.jumlahProduk
-            produk_list.append(f"{produk_nama} ({produk_jumlah})")
-        produk_str = ", ".join(produk_list)
-        
-        total_akhir = float(transaksi.totalTransaksi) + float(transaksi.ongkir)
-        
+            items.append({
+                'nama_produk': detail.idProduk.namaProduk,
+                'jumlah': detail.jumlahProduk,
+                'harga_satuan': detail.hargaSatuanSaatTransaksi or detail.idProduk.hargaProduk,
+                'subtotal_item': detail.subTotal,
+            })
+            
         transaksi_data.append({
             'no': i,
             'tanggal': transaksi.tanggalTransaksi.strftime('%d/%m/%Y'),
             'pelanggan': transaksi.idPelanggan.namaPelanggan,
-            'produk': produk_str,
+            'nama_kurir': transaksi.idKurir.namaKurir if transaksi.idKurir else "Belum Ditentukan",
+            'items': items,
+            'sub_total_transaksi': transaksi.totalTransaksi, # Total produk sebelum ongkir
             'ongkir': transaksi.ongkir,
-            'total_akhir': total_akhir,
             'status': transaksi.get_status_display(),
         })
+        
+    kurir_nama = ""
+    if context_filters.get('kurir'):
+        try:
+            kurir_obj = Kurir.objects.get(idKurir=context_filters['kurir'])
+            kurir_nama = kurir_obj.namaKurir
+        except Kurir.DoesNotExist:
+            pass
     
     context = {
         'transaksi_data': transaksi_data,
         'filters': context_filters,
+        'kurir_nama': kurir_nama,
         'summary': summary,
         'status_choices': Transaksi.STATUS_CHOICES,
         'today': timezone.now().strftime('%d/%m/%Y'),
@@ -291,7 +308,7 @@ def laporan_produk_pdf(request):
             path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, '', 1))
             return path
         return uri
-    pisa_status = pisa.CreatePDF(html, dest=buffer, encoding='utf-8')
+    pisa_status = pisa.CreatePDF(html, dest=buffer, encoding='utf-8', link_callback=link_callback)
 
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
@@ -305,84 +322,46 @@ def laporan_produk_pdf(request):
 @login_required
 @permission_required('auth.view_user', raise_exception=True)
 def laporan_pelanggan(request):
-    # Get all customers with their transaction statistics
-    pelanggan_qs = Pelanggan.objects.all().annotate(
-        total_transaksi_selesai=Count(
-            'transaksi_set',
-            filter=Q(transaksi_set__status='SELESAI')
-        ),
-        total_pengeluaran=Coalesce(
-            Sum(
-                ExpressionWrapper(
-                    F('transaksi_set__totalTransaksi') + F('transaksi_set__ongkir'),
-                    output_field=DecimalField(max_digits=14, decimal_places=2)
-                ),
-                filter=Q(transaksi_set__status='SELESAI')
-            ),
-            Decimal('0.00'),
-            output_field=DecimalField(max_digits=14, decimal_places=2)
-        )
-    ).order_by('namaPelanggan')
+    # Ambil data pelanggan langsung berdasarkan urutan nama
+    pelanggan_qs = Pelanggan.objects.all().order_by('namaPelanggan')
 
-    # Prepare data for template
+    # Petakan atribut model dasar ke template data
     pelanggan_data = []
     for i, pelanggan in enumerate(pelanggan_qs, 1):
         pelanggan_data.append({
             'no': i,
             'nama': pelanggan.namaPelanggan,
-            'jml_transaksi': pelanggan.total_transaksi_selesai,
-            'total_pengeluaran': float(pelanggan.total_pengeluaran) if pelanggan.total_pengeluaran else 0,
+            'username': pelanggan.username,
+            'alamat': pelanggan.alamat or '-',
+            'nomor_telepon': pelanggan.nomorTelepon or '-',
         })
 
     context = {
         'pelanggan_data': pelanggan_data,
     }
-    
     return render(request, 'admin/laporan_pelanggan.html', context)
 
 
 @login_required
 @permission_required('auth.view_user', raise_exception=True)
 def laporan_pelanggan_pdf(request):
-    # Get all customers with their transaction statistics
-    pelanggan_qs = Pelanggan.objects.all().annotate(
-        total_transaksi_selesai=Count(
-            'transaksi_set',
-            filter=Q(transaksi_set__status='SELESAI')
-        ),
-        total_pengeluaran=Coalesce(
-            Sum(
-                ExpressionWrapper(
-                    F('transaksi_set__totalTransaksi') + F('transaksi_set__ongkir'),
-                    output_field=DecimalField(max_digits=14, decimal_places=2)
-                ),
-                filter=Q(transaksi_set__status='SELESAI')
-            ),
-            Decimal('0.00'),
-            output_field=DecimalField(max_digits=14, decimal_places=2)
-        )
-    ).order_by('namaPelanggan')
+    pelanggan_qs = Pelanggan.objects.all().order_by('namaPelanggan')
 
-    # Prepare data for template
     pelanggan_data = []
     for i, pelanggan in enumerate(pelanggan_qs, 1):
         pelanggan_data.append({
             'no': i,
             'nama': pelanggan.namaPelanggan,
-            'jml_transaksi': pelanggan.total_transaksi_selesai,
-            'total_pengeluaran': float(pelanggan.total_pengeluaran) if pelanggan.total_pengeluaran else 0,
+            'username': pelanggan.username,
+            'alamat': pelanggan.alamat or '-',
+            'nomor_telepon': pelanggan.nomorTelepon or '-',
         })
-
-    # Calculate summary
-    total_pelanggan = len(pelanggan_data)
-    total_pengeluaran_semua = sum(item['total_pengeluaran'] for item in pelanggan_data)
 
     context = {
         'pelanggan_data': pelanggan_data,
         'today': timezone.now().strftime('%d/%m/%Y'),
         'summary': {
-            'total_pelanggan': total_pelanggan,
-            'total_pengeluaran_semua': total_pengeluaran_semua,
+            'total_pelanggan': len(pelanggan_data),
         }
     }
 
@@ -391,22 +370,17 @@ def laporan_pelanggan_pdf(request):
 
     buffer = BytesIO()
     
-    # Use the global link_callback function
     def link_callback(uri, rel):
         import os
         from django.conf import settings
-        
         if uri.startswith('/static/'):
             static_path = uri.replace('/static/', '').lstrip('/')
             for static_dir in settings.STATICFILES_DIRS:
                 path = os.path.join(str(static_dir), static_path)
-                if os.path.exists(path):
-                    return path
-            path = os.path.join(str(settings.STATIC_ROOT), static_path)
-            return path
+                if os.path.exists(path): return path
+            return os.path.join(str(settings.STATIC_ROOT), static_path)
         elif uri.startswith(settings.MEDIA_URL):
-            path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, '', 1))
-            return path
+            return os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, '', 1))
         return uri
     
     pisa_status = pisa.CreatePDF(html, dest=buffer, encoding='utf-8', link_callback=link_callback)

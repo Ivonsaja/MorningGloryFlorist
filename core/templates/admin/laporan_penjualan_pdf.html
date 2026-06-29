@@ -7,13 +7,14 @@
     <title>Laporan Penjualan</title>
     <style>
         @page {
-            margin: 22mm 16mm 22mm 16mm;
+            size: A4 landscape;
+            margin: 15mm 10mm 15mm 10mm;
         }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 11px;
+            font-size: 10px;
         }
         .kop {
             width: 100%;
@@ -26,12 +27,12 @@
             vertical-align: top;
         }
         .kop-logo {
-            width: 70px;
+            width: 100px;
             padding-right: 10px;
             vertical-align: middle;
         }
         .kop-logo img {
-            width: 55px;
+            width: 100px;
             height: auto;
         }
         .kop-text {
@@ -68,7 +69,7 @@
             border-collapse: collapse;
             table-layout: fixed;
             margin: 0 0 10px 0;
-            font-size: 10.5px;
+            font-size: 10px;
         }
         .tbl-data th,
         .tbl-data td {
@@ -86,24 +87,28 @@
         }
         .tbl-data th.no-col,
         .tbl-data td.no-col {
-            width: 3%;
-            min-width: 3%;
-            max-width: 3%;
+            width: 4%;
             text-align: center;
             white-space: nowrap;
         }
         .tbl-data th.tanggal-col,
-        .tbl-data td.tanggal-col { width: 12%; }
+        .tbl-data td.tanggal-col { width: 9%; }
         .tbl-data th.pelanggan-col,
-        .tbl-data td.pelanggan-col { width: 16%; }
+        .tbl-data td.pelanggan-col { width: 11%; }
+        .tbl-data th.kurir-col,
+        .tbl-data td.kurir-col { width: 11%; }
         .tbl-data th.produk-col,
-        .tbl-data td.produk-col { width: 34%; }
+        .tbl-data td.produk-col { width: 18%; }
+        .tbl-data th.qty-col,
+        .tbl-data td.qty-col { width: 7%; text-align: center; }
+        .tbl-data th.harga-col,
+        .tbl-data td.harga-col { width: 10%; }
+        .tbl-data th.total-item-col,
+        .tbl-data td.total-item-col { width: 10%; }
+        .tbl-data th.subtotal-col,
+        .tbl-data td.subtotal-col { width: 10%; }
         .tbl-data th.ongkir-col,
         .tbl-data td.ongkir-col { width: 10%; }
-        .tbl-data th.total-col,
-        .tbl-data td.total-col { width: 15%; }
-        .tbl-data th.status-col,
-        .tbl-data td.status-col { width: 10%; }
 
         .tbl-data td.produk-col {
             word-break: break-word;
@@ -133,7 +138,7 @@
     <table class="kop" cellpadding="0" cellspacing="0">
         <tr>
             <td class="kop-logo">
-                <img src="C:\projectdjango\MorningGloryFlorist\static\img\logo.png" alt="Logo">
+                <img src="{% static 'img/logo.png' %}" alt="Logo">
             </td>
             <td class="kop-text">
                 <div class="kop-title">Morning Glory Florist</div>
@@ -153,7 +158,8 @@
         {% if filters.start_date %}Tanggal Awal: {{ filters.start_date }}{% endif %}
         {% if filters.end_date %}{% if filters.start_date %} | {% endif %}Tanggal Akhir: {{ filters.end_date }}{% endif %}
         {% if filters.status %}{% if filters.start_date or filters.end_date %} | {% endif %}Status: {{ filters.status }}{% endif %}
-        {% if not filters.start_date and not filters.end_date and not filters.status %}Semua Data{% endif %}
+        {% if filters.kurir %}{% if filters.start_date or filters.end_date or filters.status %} | {% endif %}Kurir: {{ kurir_nama }}{% endif %}
+        {% if not filters.start_date and not filters.end_date and not filters.status and not filters.kurir %}Semua Data{% endif %}
     </div>
 
     <table class="tbl-data">
@@ -162,28 +168,42 @@
                 <th class="no-col">No</th>
                 <th class="tanggal-col">Tanggal</th>
                 <th class="pelanggan-col">Pelanggan</th>
+                <th class="kurir-col">Kurir</th>
                 <th class="produk-col">Produk</th>
+                <th class="qty-col">Satuan Produk</th>
+                <th class="harga-col">Harga Satuan</th>
+                <th class="total-item-col">Total</th>
+                <th class="subtotal-col">Sub Total</th>
                 <th class="ongkir-col">Ongkir</th>
-                <th class="total-col">Total (Produk + Ongkir)</th>
-                <th class="status-col">Status</th>
             </tr>
         </thead>
         <tbody>
             {% if transaksi_data %}
                 {% for transaksi in transaksi_data %}
-                <tr>
-                    <td class="no-col">{{ transaksi.no }}</td>
-                    <td class="tanggal-col">{{ transaksi.tanggal }}</td>
-                    <td class="pelanggan-col">{{ transaksi.pelanggan }}</td>
-                    <td class="produk-col">{{ transaksi.produk }}</td>
-                    <td class="ongkir-col">Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
-                    <td class="total-col">Rp. {{ transaksi.total_akhir|floatformat:2|intcomma }}</td>
-                    <td class="status-col">{{ transaksi.status }}</td>
-                </tr>
+                    {% for item in transaksi.items %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td class="no-col" rowspan="{{ transaksi.items|length }}">{{ transaksi.no }}</td>
+                            <td class="tanggal-col" rowspan="{{ transaksi.items|length }}">{{ transaksi.tanggal }}</td>
+                            <td class="pelanggan-col" rowspan="{{ transaksi.items|length }}">{{ transaksi.pelanggan }}</td>
+                            <td class="kurir-col" rowspan="{{ transaksi.items|length }}">{{ transaksi.nama_kurir }}</td>
+                        {% endif %}
+                        
+                        <td class="produk-col">{{ item.nama_produk }}</td>
+                        <td class="qty-col">{{ item.jumlah }}</td>
+                        <td class="harga-col">Rp. {{ item.harga_satuan|floatformat:2|intcomma }}</td>
+                        <td class="total-item-col">Rp. {{ item.subtotal_item|floatformat:2|intcomma }}</td>
+                        
+                        {% if forloop.first %}
+                            <td class="subtotal-col" rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.sub_total_transaksi|floatformat:2|intcomma }}</td>
+                            <td class="ongkir-col" rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="7" style="text-align: center;">Tidak ada data</td>
+                    <td colspan="10" style="text-align: center;">Tidak ada data</td>
                 </tr>
             {% endif %}
         </tbody>

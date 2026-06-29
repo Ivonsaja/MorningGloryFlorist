@@ -13,7 +13,6 @@
                     <h3 class="card-title">Laporan Data Pelanggan</h3>
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="card-body">
                     <div class="form-row">
                         <div class="form-group col-md-12" style="text-align: right;">
@@ -22,16 +21,16 @@
                     </div>
                 </div>
                 
-                <!-- Data Table -->
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Pelanggan</th>
-                                    <th>Transaksi Selesai</th>
-                                    <th>Total Pengeluaran (Rp)</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Username</th>
+                                    <th>Alamat</th>
+                                    <th>Nomor Telepon</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,13 +39,14 @@
                                     <tr>
                                         <td>{{ pelanggan.no }}</td>
                                         <td>{{ pelanggan.nama }}</td>
-                                        <td>{{ pelanggan.jml_transaksi }}</td>
-                                        <td>Rp. {{ pelanggan.total_pengeluaran|floatformat:2|intcomma }}</td>
+                                        <td>{{ pelanggan.username }}</td>
+                                        <td>{{ pelanggan.alamat }}</td>
+                                        <td>{{ pelanggan.nomor_telepon }}</td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="4" class="text-center">Tidak ada data</td>
+                                        <td colspan="5" class="text-center">Tidak ada data</td>
                                     </tr>
                                 {% endif %}
                             </tbody>

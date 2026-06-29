@@ -26,12 +26,12 @@
             vertical-align: top;
         }
         .kop-logo {
-            width: 70px;
+            width: 100px;
             padding-right: 10px;
             vertical-align: middle;
         }
         .kop-logo img {
-            width: 55px;
+            width: 100px;
             height: auto;
         }
         .kop-text {
@@ -86,18 +86,18 @@
         }
         .tbl-data th.no-col,
         .tbl-data td.no-col {
-            width: 3%;
-            min-width: 3%;
-            max-width: 3%;
+            width: 5%;
             text-align: center;
             white-space: nowrap;
         }
         .tbl-data th.nama-col,
-        .tbl-data td.nama-col { width: 37%; }
-        .tbl-data th.transaksi-col,
-        .tbl-data td.transaksi-col { width: 20%; }
-        .tbl-data th.pengeluaran-col,
-        .tbl-data td.pengeluaran-col { width: 40%; }
+        .tbl-data td.nama-col { width: 25%; }
+        .tbl-data th.username-col,
+        .tbl-data td.username-col { width: 15%; }
+        .tbl-data th.alamat-col,
+        .tbl-data td.alamat-col { width: 40%; }
+        .tbl-data th.telp-col,
+        .tbl-data td.telp-col { width: 15%; }
         
         .tbl-data td.nama-col {
             word-break: break-word;
@@ -127,7 +127,7 @@
     <table class="kop" cellpadding="0" cellspacing="0">
         <tr>
             <td class="kop-logo">
-                <img src="C:\projectdjango\MorningGloryFlorist\static\img\logo.png" alt="Logo">
+                <img src="{% static 'img/logo.png' %}" alt="Logo">
             </td>
             <td class="kop-text">
                 <div class="kop-title">Morning Glory Florist</div>
@@ -135,7 +135,6 @@
                 <div class="kop-sub">Jam Operasional : Senin-sabtu (08:00-19:00)</div>
                 <div class="kop-sub">No.Hp : 0821-4493-8887</div>
             </td>
-           
         </tr>
         <tr> <td colspan="2"><hr><br></td></tr>
     </table>
@@ -152,9 +151,10 @@
         <thead>
             <tr>
                 <th class="no-col">No</th>
-                <th class="nama-col">Nama Pelanggan</th>
-                <th class="transaksi-col">Transaksi Selesai</th>
-                <th class="pengeluaran-col">Total Belanja (Rp)</th>
+                <th class="nama-col">Nama Lengkap</th>
+                <th class="username-col">Username</th>
+                <th class="alamat-col">Alamat</th>
+                <th class="telp-col">Nomor Telepon</th>
             </tr>
         </thead>
         <tbody>
@@ -163,19 +163,22 @@
                 <tr>
                     <td class="no-col">{{ pelanggan.no }}</td>
                     <td class="nama-col">{{ pelanggan.nama }}</td>
-                    <td class="transaksi-col">{{ pelanggan.jml_transaksi }}</td>
-                    <td class="pengeluaran-col">Rp. {{ pelanggan.total_pengeluaran|floatformat:2|intcomma }}</td>
+                    <td class="username-col">{{ pelanggan.username }}</td>
+                    <td class="alamat-col">{{ pelanggan.alamat }}</td>
+                    <td class="telp-col">{{ pelanggan.nomor_telepon }}</td>
                 </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="4" style="text-align: center;">Tidak ada data</td>
+                    <td colspan="5" style="text-align: center;">Tidak ada data</td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
     
-   
+    <div class="summary-section">
+        <div><strong>Total Pelanggan:</strong> {{ summary.total_pelanggan }}</div>
+    </div>
     
     <div class="print-date">
         <strong>Tanggal Cetak:</strong> {{ today }}
