@@ -93,6 +93,8 @@ def admin_laporan_penjualan(request):
                 'subtotal_item': detail.subTotal,
             })
             
+        total_akhir = float(transaksi.totalTransaksi) + float(transaksi.ongkir)
+        
         transaksi_data.append({
             'no': i,
             'tanggal': transaksi.tanggalTransaksi.strftime('%d/%m/%Y'),
@@ -101,6 +103,7 @@ def admin_laporan_penjualan(request):
             'items': items,
             'sub_total_transaksi': transaksi.totalTransaksi, # Total produk sebelum ongkir
             'ongkir': transaksi.ongkir,
+            'total_akhir': total_akhir,
             'status': transaksi.get_status_display(),
         })
     
@@ -132,6 +135,8 @@ def admin_laporan_penjualan_pdf(request):
                 'subtotal_item': detail.subTotal,
             })
             
+        total_akhir = float(transaksi.totalTransaksi) + float(transaksi.ongkir)
+        
         transaksi_data.append({
             'no': i,
             'tanggal': transaksi.tanggalTransaksi.strftime('%d/%m/%Y'),
@@ -140,6 +145,7 @@ def admin_laporan_penjualan_pdf(request):
             'items': items,
             'sub_total_transaksi': transaksi.totalTransaksi, # Total produk sebelum ongkir
             'ongkir': transaksi.ongkir,
+            'total_akhir': total_akhir,
             'status': transaksi.get_status_display(),
         })
         

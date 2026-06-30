@@ -174,7 +174,7 @@
                 <th class="harga-col">Harga Satuan</th>
                 <th class="total-item-col">Total</th>
                 <th class="ongkir-col">Ongkir</th>
-                <th class="subtotal-col">Sub Total</th>
+                <th class="subtotal-col">Total akhir</th>
             </tr>
         </thead>
         <tbody>
@@ -196,7 +196,7 @@
                         
                         {% if forloop.first %}
                             <td class="ongkir-col" rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.ongkir|floatformat:2|intcomma }}</td>
-                            <td class="subtotal-col" rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.sub_total_transaksi|floatformat:2|intcomma }}</td>
+                            <td class="subtotal-col" rowspan="{{ transaksi.items|length }}">Rp. {{ transaksi.total_akhir|floatformat:2|intcomma }}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
