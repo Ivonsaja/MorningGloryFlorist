@@ -34,7 +34,7 @@
                     <form method="post" action="{% url 'pelanggan_cart_add' product.idProduk %}" class="mt-2">
                         {% csrf_token %}
                         <div class="d-flex gap-2 align-items-center">
-                            <input type="number" name="qty" value="0" min="0" max="{{ product.stok }}" class="form-control form-control-sm" style="max-width:90px;">
+                            <input type="number" name="qty" value="1" min="1" max="{{ product.stok }}" class="form-control form-control-sm" style="max-width:90px;">
                             <button type="submit" class="btn btn-primary btn-sm" title="Tambah ke Keranjang">
                                 <i class="fa-solid fa-cart-shopping"></i>
                             </button>

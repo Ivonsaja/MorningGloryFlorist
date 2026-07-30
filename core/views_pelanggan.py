@@ -25,10 +25,6 @@ def pelanggan_required(view_func):
     return wrapper
 
 
-def pelanggan_index(request):
-    products = Produk.objects.all()[:6]
-    context = {'products': products}
-    return render(request, 'pelanggan/index.html', context)
 
 
 def pelanggan_katalog(request):
@@ -101,7 +97,7 @@ def pelanggan_register(request):
             
             request.session['pelanggan_id'] = pelanggan.idPelanggan
             messages.success(request, 'Registrasi berhasil!')
-            return redirect('pelanggan_index')
+            return redirect('pelanggan_katalog')
         except Exception as e:
             return render(request, 'pelanggan/register.html', {
                 'error': f'Terjadi kesalahan: {str(e)}',
@@ -128,7 +124,7 @@ def pelanggan_login(request):
             if pelanggan.check_password(password):
                 request.session['pelanggan_id'] = pelanggan.idPelanggan
                 messages.success(request, 'Login berhasil!')
-                return redirect(next_url if next_url != '/pelanggan/login/' else 'pelanggan_index')
+                return redirect(next_url if next_url != '/pelanggan/login/' else 'pelanggan_katalog')
             else:
                 return render(request, 'pelanggan/login.html', {
                     'error': 'Username atau password salah',
@@ -147,7 +143,7 @@ def pelanggan_logout(request):
     if 'pelanggan_id' in request.session:
         del request.session['pelanggan_id']
     messages.success(request, 'Anda telah logout')
-    return redirect('pelanggan_index')
+    return redirect('pelanggan_katalog')
 
 
 @pelanggan_required

@@ -22,8 +22,9 @@ def build_laporan_penjualan_queryset(request):
     # Get filter parameters
     status = request.GET.get('status', '')
     kurir_id = request.GET.get('kurir', '') # Ambil filter kurir
-    start_date = request.GET.get('start_date', '')
-    end_date = request.GET.get('end_date', '')
+    today_str = timezone.now().strftime('%Y-%m-%d')
+    start_date = request.GET.get('start_date', today_str)
+    end_date = request.GET.get('end_date', today_str)
     
     # Build queryset
     queryset = Transaksi.objects.select_related('idPelanggan', 'idKurir').prefetch_related('detail_set__idProduk').order_by('-tanggalTransaksi')
@@ -210,8 +211,9 @@ def admin_laporan_penjualan_pdf(request):
 
 def build_laporan_produk_queryset(request):
     status = request.GET.get('status', '')
-    start_date = request.GET.get('start_date', '')
-    end_date = request.GET.get('end_date', '')
+    today_str = timezone.now().strftime('%Y-%m-%d')
+    start_date = request.GET.get('start_date', today_str)
+    end_date = request.GET.get('end_date', today_str)
 
     transaksi_filter = Q(detailtransaksi__idTransaksi__status__in=[
     'MENUNGGU_VERIFIKASI', 'DISETUJUI', 'DIKIRIM', 'SELESAI', 'REFUND_SELESAI'

@@ -98,9 +98,11 @@
         .tbl-data th.kurir-col,
         .tbl-data td.kurir-col { width: 11%; }
         .tbl-data th.produk-col,
-        .tbl-data td.produk-col { width: 18%; }
+        .tbl-data td.produk-col { width: 17%; }
         .tbl-data th.qty-col,
-        .tbl-data td.qty-col { width: 7%; text-align: center; }
+        .tbl-data td.qty-col { width: 4%; text-align: center; }
+        .tbl-data th.satuan-col,
+        .tbl-data td.satuan-col { width: 4%; text-align: center; }
         .tbl-data th.harga-col,
         .tbl-data td.harga-col { width: 10%; }
         .tbl-data th.total-item-col,
@@ -170,7 +172,8 @@
                 <th class="pelanggan-col">Pelanggan</th>
                 <th class="kurir-col">Kurir</th>
                 <th class="produk-col">Produk</th>
-                <th class="qty-col">Satuan Produk</th>
+                <th class="qty-col">Qty</th>
+                <th class="satuan-col">Satuan</th>
                 <th class="harga-col">Harga Satuan</th>
                 <th class="total-item-col">Total</th>
                 <th class="ongkir-col">Ongkir</th>
@@ -191,6 +194,7 @@
                         
                         <td class="produk-col">{{ item.nama_produk }}</td>
                         <td class="qty-col">{{ item.jumlah }}</td>
+                        <td class="satuan-col">Pcs</td>
                         <td class="harga-col">Rp. {{ item.harga_satuan|floatformat:2|intcomma }}</td>
                         <td class="total-item-col">Rp. {{ item.subtotal_item|floatformat:2|intcomma }}</td>
                         
@@ -203,7 +207,7 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="10" style="text-align: center;">Tidak ada data</td>
+                    <td colspan="11" style="text-align: center;">Tidak ada data</td>
                 </tr>
             {% endif %}
         </tbody>
