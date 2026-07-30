@@ -181,7 +181,7 @@ def set_refund_selesai(modeladmin, request, queryset):
 set_refund_selesai.short_description = "Set status Refund Selesai"
 
 class TransaksiAdmin(admin.ModelAdmin):
-    list_display = ('tanggalTransaksi', 'idPelanggan', 'status', 'TotalTransaksi', 'thumb_bukti_bayar', 'thumb_bukti_refund', 'aksi')
+    list_display = ('tanggalTransaksi', 'idPelanggan', 'status', 'KolomOngkir', 'TotalTransaksi', 'thumb_bukti_bayar', 'thumb_bukti_refund', 'aksi')
     list_filter = ('status', 'tanggalTransaksi')
     search_fields = ('idTransaksi', 'idPelanggan__namaPelanggan', 'idPelanggan__username')
     date_hierarchy = 'tanggalTransaksi'
@@ -213,6 +213,10 @@ class TransaksiAdmin(admin.ModelAdmin):
     @admin.display(description='Total Pembayaran')
     def TotalTransaksi(self, obj):
         return f'Rp. {intcomma(obj.totalTransaksi)}'
+
+    @admin.display(description='Ongkos Kirim')
+    def KolomOngkir(self, obj):
+        return f'Rp. {intcomma(int(obj.ongkir))}'
 
     def save_model(self, request, obj, form, change):
         # Validate kurir required for DIKIRIM status

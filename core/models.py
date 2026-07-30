@@ -88,7 +88,7 @@ class Transaksi(models.Model):
     buktiRefund = models.ImageField(upload_to='bukti_refund/', blank=True, null=True)
     tanggalRefund = models.DateTimeField(null=True, blank=True)
     catatanRefund = models.TextField(blank=True)
-    ONGKIR_CHOICES = [(Decimal(str(i)), f"Rp. {i:,}".replace(",", ".")) for i in range(0, 105000, 5000)]
+    ONGKIR_CHOICES = [(Decimal(str(i)).quantize(Decimal('0.01')), f"Rp. {i:,}".replace(",", ".")) for i in range(0, 105000, 5000)]
     ongkir = models.DecimalField(max_digits=12, decimal_places=2, default=0, choices=ONGKIR_CHOICES)
     totalTransaksi = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
